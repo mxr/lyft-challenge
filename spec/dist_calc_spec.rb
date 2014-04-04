@@ -14,7 +14,7 @@ describe Coordinate do
     end
   end
 
-  describe '#=' do
+  describe '#==' do
     context 'when comparing the object' do
       it 'succeeds when given another Coordinate with the same lat and long' do
         expect(subject).to eq(subject.clone)
