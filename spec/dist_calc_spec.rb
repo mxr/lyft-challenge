@@ -37,53 +37,57 @@ describe Coordinate do
   let(:moscow)    { Coordinate.new(55.755826, 37.6173) }
 
   describe '#distance' do
-    context 'when given an endpoint and one detour point' do
+    context 'when given an endpoint and an invalid detour' do
       it 'returns unreachable' do
-        expect(seattle.distance(sunnyvale, nyc, nil)).to eq(Float::INFINITY)
+        expect(seattle.distance(sunnyvale, Detour.new(nyc, nil))).
+          to eq(Float::INFINITY)
       end
 
       it 'returns unreachable' do
-        expect(seattle.distance(sunnyvale, nil, nyc)).to eq(Float::INFINITY)
-      end
-    end
-
-    context 'when given an unreachable endpoint' do
-      it 'returns unreachable' do
-        expect(seattle.distance(moscow, austin, nyc)).to eq(Float::INFINITY)
+        expect(seattle.distance(sunnyvale, Detour.new(nil, nyc))).
+          to eq(Float::INFINITY)
       end
     end
 
     context 'when given an unreachable detour' do
       it 'returns unreachable' do
-        expect(seattle.distance(austin, moscow, nyc)).to eq(Float::INFINITY)
+        expect(seattle.distance(moscow, Detour.new(austin, nyc))).
+          to eq(Float::INFINITY)
       end
 
       it 'returns unreachable' do
-        expect(seattle.distance(austin, nyc, moscow)).to eq(Float::INFINITY)
+        expect(seattle.distance(austin, Detour.new(moscow, nyc))).
+          to eq(Float::INFINITY)
+      end
+
+      it 'returns unreachable' do
+        expect(seattle.distance(austin, Detour.new(nyc, moscow))).
+          to eq(Float::INFINITY)
       end
     end
 
     context 'when given a duplicate endpoint' do
       it 'returns zero' do
-        expect(seattle.distance(seattle.clone, nil, nil)).to eq 0
+        expect(seattle.distance(seattle.clone)).to eq 0
       end
     end
 
     context 'when given a duplicate endpoint and detours' do
       it 'returns zero' do
-        expect(nyc.distance(nyc.clone, nyc.clone, nyc.clone)).to eq 0
+        expect(nyc.distance(nyc.clone, Detour.new(nyc.clone, nyc.clone))).
+          to eq 0
       end
     end
 
     context 'when given a reachable endpoint' do
       it 'returns a positive value' do
-        expect(seattle.distance(sunnyvale, nil, nil)).to be > 0
+        expect(seattle.distance(sunnyvale)).to be > 0
       end
     end
 
     context 'when given a reachable endpoint with reachable detours' do
       it 'returns a positive value' do
-        expect(seattle.distance(sunnyvale, austin, nyc)).to be > 0
+        expect(seattle.distance(sunnyvale, Detour.new(austin, nyc))).to be > 0
       end
     end
 
@@ -92,14 +96,12 @@ describe Coordinate do
       let(:system_exit) { SystemExit.new(http_error.message) }
 
       before do
-        allow_any_instance_of(Coordinate)
-                  .to receive(:open)
-                  .with(an_instance_of(URI::HTTP))
-                  .and_raise(http_error)
-        allow_any_instance_of(Coordinate)
-                  .to receive(:abort)
-                  .with(an_instance_of(String))
-                  .and_raise(system_exit)
+        allow_any_instance_of(Coordinate).to receive(:open)
+                                         .with(an_instance_of(URI::HTTP))
+                                         .and_raise(http_error)
+        allow_any_instance_of(Coordinate).to receive(:abort)
+                                         .with(an_instance_of(String))
+                                         .and_raise(system_exit)
       end
 
       it 'should exit' do
@@ -116,36 +118,36 @@ describe Coordinate do
     context 'when given a reachable detour' do
       it 'returns a positive value' do
         expect(Coordinate.min_detour_distance(seattle, austin, nyc, sunnyvale))
-               .to be > 0
+        .to be > 0
       end
     end
 
     context 'when given an unreachable detour' do
       it 'returns unreachable' do
         expect(Coordinate.min_detour_distance(seattle, austin, moscow, nyc))
-               .to eq(Float::INFINITY)
+        .to eq(Float::INFINITY)
       end
     end
 
     context 'when given a nil coordinate' do
       it 'returns unreachable' do
         expect(Coordinate.min_detour_distance(seattle, nil, nil, nil))
-               .to eq(Float::INFINITY)
+        .to eq(Float::INFINITY)
       end
 
       it 'returns unreachable' do
         expect(Coordinate.min_detour_distance(nil, seattle, nil, nil))
-               .to eq(Float::INFINITY)
+        .to eq(Float::INFINITY)
       end
 
       it 'returns unreachable' do
         expect(Coordinate.min_detour_distance(nil, nil, seattle, nil))
-               .to eq(Float::INFINITY)
+        .to eq(Float::INFINITY)
       end
 
       it 'returns unreachable' do
         expect(Coordinate.min_detour_distance(nil, nil, nil, seattle))
-               .to eq(Float::INFINITY)
+        .to eq(Float::INFINITY)
       end
     end
   end

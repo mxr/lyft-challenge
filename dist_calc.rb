@@ -4,6 +4,7 @@ require 'cgi'
 require 'json'
 require 'open-uri'
 require 'uri'
+require_relative 'detour'
 
 # Class to represent a coordinate on Earth.
 class Coordinate
@@ -22,22 +23,20 @@ class Coordinate
     other && [@latitude, @longitude] == [other.latitude, other.longitude]
   end
 
-  # Computes the distance between this coordinate and another coordinate
-  # while optionally stopping at the coordinates given as detour_start and
-  # detour_end. Returns the distance in miles or Float::INFINITY if the
-  # distance is not reachable.
-  def distance(other, detour_start = nil, detour_end = nil)
+  # Computes the distance between this Coordinate and another Coordinate while
+  # optionally taking the given Detour. Returns the distance in miles or
+  # Float::INFINITY if the distance is not reachable.
+  def distance(other, detour = nil)
 
-    def invalid_detour(detour_start, detour_end)
-      [detour_start, detour_end].compact.size == 1
+    return Float::INFINITY if detour && (not detour.valid?)
+
+    if self == other
+      if detour.nil?
+        return 0
+      else
+        return 0 if self == detour.start && detour.no_distance?
+      end
     end
-
-    return Float::INFINITY if invalid_detour(detour_start, detour_end)
-
-    # Check for the degenerate case when start-and-end pairs are the same, and
-    # the detour points are the same as the start (or there are no detours).
-    return 0 if (self == other and detour_start == detour_end) and
-                (detour_start.nil? or self == detour_start)
 
     # Compute the distance between this coordinate and the others using the
     # Bing Maps API. Unreachable distances cause us to return a distance of
@@ -53,9 +52,9 @@ class Coordinate
        'wp.1'  => self.to_unescaped_query_param}
 
     unescaped_waypoint_query_params =
-      if detour_start and detour_end
-        {'vwp.2' => detour_start.to_unescaped_query_param,
-         'vwp.3' => detour_end.to_unescaped_query_param,
+      if detour
+        {'vwp.2' => detour.start.to_unescaped_query_param,
+         'vwp.3' => detour.terminus.to_unescaped_query_param,
          'wp.4'  => other.to_unescaped_query_param}
       else
         {'wp.2' => other.to_unescaped_query_param}
@@ -103,12 +102,12 @@ class Coordinate
     # If a detour is unreachable, this means one of the coordinates is on an
     # "undrivable island", so the other distances will also be unreachable and
     # we don't need to check them.
-    acdb = a.distance(b, c, d)
+    acdb = a.distance(b, Detour.new(c, d))
     if (acdb == Float::INFINITY)
       Float::INFINITY
     else
       ab_detour_distance = acdb - a.distance(b)
-      cd_detour_distance = c.distance(d, a, b) - c.distance(d)
+      cd_detour_distance = c.distance(d, Detour.new(a, b)) - c.distance(d)
       [ab_detour_distance, cd_detour_distance].min
     end
   end
