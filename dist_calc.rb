@@ -31,11 +31,7 @@ class Coordinate
     return Float::INFINITY if detour && (not detour.valid?)
 
     if self == other
-      if detour.nil?
-        return 0
-      else
-        return 0 if self == detour.start && detour.no_distance?
-      end
+      return 0 if detour.nil? || self == detour.start && detour.no_distance?
     end
 
     # Compute the distance between this coordinate and the others using the
