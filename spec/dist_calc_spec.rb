@@ -23,6 +23,10 @@ describe Coordinate do
       it 'fails when given a Coordinate with a different lat and long' do
         expect(subject).not_to eq(Coordinate.new(subject.latitude+1, 0))
       end
+
+      it 'fails when given a nil object' do
+        expect(subject).not_to eq(nil)
+      end
     end
   end
 

@@ -19,7 +19,7 @@ class Coordinate
   end
 
   def ==(other)
-    [@latitude, @longitude] == [other.latitude, other.longitude]
+    other && [@latitude, @longitude] == [other.latitude, other.longitude]
   end
 
   # Computes the distance between this coordinate and another coordinate
