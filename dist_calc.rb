@@ -28,7 +28,7 @@ class Coordinate
   # Float::INFINITY if the distance is not reachable.
   def distance(other, detour = nil)
 
-    return Float::INFINITY if detour && (not detour.valid?)
+    return Float::INFINITY if detour && detour.invalid?
 
     if self == other
       return 0 if detour.nil? || self == detour.start && detour.no_distance?

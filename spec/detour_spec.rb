@@ -38,6 +38,30 @@ describe Detour do
     end
   end
 
+  describe '#invalid?' do
+    context 'when checking invalidity' do
+      it 'returns false for two non-nil Coordinates' do
+        expect(different_locations.invalid?).to be false
+      end
+
+      it 'returns false when both Coordinates are the same location' do
+        expect(same_location.invalid?).to be false
+      end
+
+      it 'returns true when the first Coordinate is nil' do
+        expect(first_nil_location.invalid?).to be true
+      end
+
+      it 'returns true when the second Coordinate is nil' do
+        expect(second_nil_location.invalid?).to be true
+      end
+
+      it 'returns false when both Coordinates are nil' do
+        expect(nil_locations.invalid?).to be false
+      end
+    end
+  end
+
   describe '#no_distance?' do
     context 'when checking if the detour covers no distance' do
       it 'returns false for two non-nil Coordinates' do

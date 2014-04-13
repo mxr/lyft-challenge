@@ -14,6 +14,10 @@ class Detour
     @start.nil? ? @terminus.nil? : (not @terminus.nil?)
   end
 
+  def invalid?
+    not valid?
+  end
+
   def no_distance?
     @start == nil || @terminus == nil || @start == @terminus
   end
