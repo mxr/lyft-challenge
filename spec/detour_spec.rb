@@ -1,3 +1,5 @@
+require 'spec_helper'
+
 require_relative '../detour'
 require_relative '../dist_calc'
 
