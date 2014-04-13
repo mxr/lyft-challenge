@@ -1,155 +1,75 @@
+# This gem is used to read stderr and as a cross-platform way to suppress
+# command output.
+require 'open3'
+
+require 'spec_helper'
+
+require_relative '../coordinate'
 require_relative '../dist_calc'
 
-describe Coordinate do
+describe 'dist_calc CLI app' do
+  context 'when passing in invalid arguments' do
+    it 'returns an error for no arguments' do
+      Open3.popen3('ruby dist_calc.rb') do |_, _, _, thread|
+        expect(thread.value).to_not eq(0)
+      end
+    end
 
-  let(:latitude)  { 0 }
-  let(:longitude) { 1 }
-  subject { Coordinate.new(latitude, longitude) }
+    it 'returns an error if an argument is missing' do
+      Open3.popen3('ruby dist_calc.rb -C 0,0') do |_, _, _, thread|
+        expect(thread.value).to_not eq(0)
+      end
+    end
 
-  describe '#to_unescaped_query_param' do
-    context 'when serializing the object' do
-      it 'prints both latitude and longitude' do
-        expect(subject.to_unescaped_query_param).to eq('0, 1')
+    it 'returns an error if arguments are badly formatted' do
+      command = 'ruby dist_calc.rb -A -B 0 -C 1,2,3 -D asd'
+      Open3.popen3(command) do |_, _, _, thread|
+        expect(thread.value).to_not eq(0)
       end
     end
   end
 
-  describe '#==' do
-    context 'when comparing the object' do
-      it 'succeeds when given another Coordinate with the same lat and long' do
-        expect(subject).to eq(subject.clone)
-      end
+  context 'when passing in valid Coordinates' do
+    let(:seattle)   { Coordinate.new(47.606209, -122.332071) }
+    let(:sunnyvale) { Coordinate.new(37.368830, -122.03635) }
+    let(:austin)    { Coordinate.new(30.267153, -97.743061) }
+    let(:nyc)       { Coordinate.new(40.714353, -74.005973) }
+    let(:moscow)    { Coordinate.new(55.755826, 37.6173) }
 
-      it 'fails when given a Coordinate with a different lat and long' do
-        expect(subject).not_to eq(Coordinate.new(subject.latitude+1, 0))
-      end
+    def build_args(a, b, c, d)
+      options = %w[-A -B -C -D]
+      coordinates = [a, b, c, d]
 
-      it 'fails when given a nil object' do
-        expect(subject).not_to eq(nil)
-      end
+      options.zip(coordinates).map do |(option, coordinate)|
+        "#{option} #{coordinate.latitude},#{coordinate.longitude}"
+      end.join(' ')
     end
-  end
 
-  let(:seattle)   { Coordinate.new(47.606209, -122.332071) }
-  let(:sunnyvale) { Coordinate.new(37.368830, -122.03635) }
-  let(:austin)    { Coordinate.new(30.267153, -97.743061) }
-  let(:nyc)       { Coordinate.new(40.714353, -74.005973) }
-  let(:moscow)    { Coordinate.new(55.755826, 37.6173) }
+    let(:reachable_args)   { build_args(seattle, sunnyvale, austin, nyc) }
+    let(:unreachable_args) { build_args(moscow, sunnyvale, austin, nyc) }
 
-  describe '#distance' do
-    context 'when given an endpoint and an invalid detour' do
-      it 'returns unreachable' do
-        expect(seattle.distance(sunnyvale, Detour.new(nyc, nil))).
-          to eq(Float::INFINITY)
-      end
-
-      it 'returns unreachable' do
-        expect(seattle.distance(sunnyvale, Detour.new(nil, nyc))).
-          to eq(Float::INFINITY)
+    it 'returns success with valid coordinates' do
+      Open3.popen3("ruby dist_calc.rb #{reachable_args}") do |_, _, _, thread|
+        expect(thread.value.exitstatus).to be 0
       end
     end
 
-    context 'when given an unreachable detour' do
-      it 'returns unreachable' do
-        expect(seattle.distance(moscow, Detour.new(austin, nyc))).
-          to eq(Float::INFINITY)
-      end
-
-      it 'returns unreachable' do
-        expect(seattle.distance(austin, Detour.new(moscow, nyc))).
-          to eq(Float::INFINITY)
-      end
-
-      it 'returns unreachable' do
-        expect(seattle.distance(austin, Detour.new(nyc, moscow))).
-          to eq(Float::INFINITY)
+    it 'tells the user the output with valid coordinates' do
+      Open3.popen3("ruby dist_calc.rb #{reachable_args}") do |_, stdout, _, _|
+        expect(stdout.read.downcase).to match(/\d+ mi/)
       end
     end
 
-    context 'when given a duplicate endpoint' do
-      it 'returns zero' do
-        expect(seattle.distance(seattle.clone)).to eq 0
+    it 'returns an error if the distance is unreachable' do
+      Open3.popen3("ruby dist_calc.rb #{unreachable_args}") do |_, _, _, thread|
+        expect(thread.value.exitstatus).to_not eq(0)
       end
     end
 
-    context 'when given a duplicate endpoint and detours' do
-      it 'returns zero' do
-        expect(nyc.distance(nyc.clone, Detour.new(nyc.clone, nyc.clone))).
-          to eq 0
-      end
-    end
-
-    context 'when given a reachable endpoint' do
-      it 'returns a positive value' do
-        expect(seattle.distance(sunnyvale)).to be > 0
-      end
-    end
-
-    context 'when given a reachable endpoint with reachable detours' do
-      it 'returns a positive value' do
-        expect(seattle.distance(sunnyvale, Detour.new(austin, nyc))).to be > 0
-      end
-    end
-
-    context 'when the server returns an unexpected error' do
-      let(:http_error)  { OpenURI::HTTPError.new('500', double('io')) }
-      let(:system_exit) { SystemExit.new(http_error.message) }
-
-      before do
-        allow_any_instance_of(Coordinate).to receive(:open)
-                                         .with(an_instance_of(URI::HTTP))
-                                         .and_raise(http_error)
-        allow_any_instance_of(Coordinate).to receive(:abort)
-                                         .with(an_instance_of(String))
-                                         .and_raise(system_exit)
-      end
-
-      it 'should exit' do
-        expect(
-          lambda do
-            Coordinate.min_detour_distance(seattle, austin, nyc, sunnyvale)
-          end
-        ).to raise_error(system_exit)
-      end
-    end
-  end
-
-  describe '.min_detour_distance' do
-    context 'when given a reachable detour' do
-      it 'returns a positive value' do
-        expect(Coordinate.min_detour_distance(seattle, austin, nyc, sunnyvale))
-        .to be > 0
-      end
-    end
-
-    context 'when given an unreachable detour' do
-      it 'returns unreachable' do
-        expect(Coordinate.min_detour_distance(seattle, austin, moscow, nyc))
-        .to eq(Float::INFINITY)
-      end
-    end
-
-    context 'when given a nil coordinate' do
-      it 'returns unreachable' do
-        expect(Coordinate.min_detour_distance(seattle, nil, nil, nil))
-        .to eq(Float::INFINITY)
-      end
-
-      it 'returns unreachable' do
-        expect(Coordinate.min_detour_distance(nil, seattle, nil, nil))
-        .to eq(Float::INFINITY)
-      end
-
-      it 'returns unreachable' do
-        expect(Coordinate.min_detour_distance(nil, nil, seattle, nil))
-        .to eq(Float::INFINITY)
-      end
-
-      it 'returns unreachable' do
-        expect(Coordinate.min_detour_distance(nil, nil, nil, seattle))
-        .to eq(Float::INFINITY)
+    it 'tells the user the distance is unreachable if that is the case' do
+      Open3.popen3("ruby dist_calc.rb #{unreachable_args}") do |_, _, stderr, _|
+        expect(stderr.read.downcase).to match(/unreachable/)
       end
     end
   end
 end
-
