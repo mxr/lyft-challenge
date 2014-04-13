@@ -1,4 +1,5 @@
 require_relative '../detour'
+require_relative '../dist_calc'
 
 describe Detour do
 
