@@ -65,6 +65,35 @@ class DistanceCalculator
       raise DistanceError.new(message)
     end
   end
+
+  # Adapted from the challenge description: Given four latitude / longitude
+  # pairs, where driver one is traveling from coordinate A to coordinate B and
+  # driver two is traveling from coordinate C to coordinate D, this function
+  # calculates the shorter of the detour distances the drivers would need to
+  # take to pick-up and drop-off the other driver.
+  # For example if the driver meant to go from A to B but had to go to C and D
+  # first then the detour distance is ACDB - AB. The minimum detour distance is
+  # simply the minimum of the possible detour combinations (which could be
+  # Float::INFINITY if one place is unreachable).
+  def self.minimum_detour_distance(a, b, c, d)
+
+    return Float::INFINITY unless a && b && c && d
+
+    acdb = DistanceCalculator.distance(a, b, Detour.new(c,d))
+    if acdb == Float::INFINITY
+      # If any path is unreachable, this means one of the coordinates is on an
+      # "undrivable island", so the other distances will also be unreachable
+      # and we don't need to check them.
+      Float::INFINITY
+    else
+      ab_detour_distance = acdb - DistanceCalculator.distance(a, b)
+
+      cabd = DistanceCalculator.distance(c, d, Detour.new(a, b))
+      cd_detour_distance = cabd - DistanceCalculator.distance(c, d)
+
+      [ab_detour_distance, cd_detour_distance].min
+    end
+  end
 end
 
 # Error that the DistanceCalculator throws in case of an issue that prohibits

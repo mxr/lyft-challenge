@@ -121,4 +121,68 @@ describe DistanceCalculator do
       end
     end
   end
+
+  describe '.minimum_detour_distance' do
+    context 'when given nil or unreachable coordinates' do
+      it 'returns unreachable if one of the inputs are nil' do
+        expect(DistanceCalculator.minimum_detour_distance(nil, nyc, nyc, nyc)).
+          to eq(Float::INFINITY)
+      end
+
+      it 'returns unreachable if one of the inputs are nil' do
+        expect(DistanceCalculator.minimum_detour_distance(nyc, nil, nyc, nyc)).
+          to eq(Float::INFINITY)
+      end
+
+      it 'returns unreachable if one of the inputs are nil' do
+        expect(DistanceCalculator.minimum_detour_distance(nyc, nyc, nil, nyc)).
+          to eq(Float::INFINITY)
+      end
+
+      it 'returns unreachable if one of the inputs are nil' do
+        expect(DistanceCalculator.minimum_detour_distance(nyc, nyc, nyc, nil)).
+          to eq(Float::INFINITY)
+      end
+
+      it 'returns unreachable if one of the coordinates is unreachable' do
+        expect(
+          DistanceCalculator.minimum_detour_distance(nyc, nyc, nyc, moscow)
+        ).to eq(Float::INFINITY)
+      end
+    end
+
+    context 'when given reachable coordinates' do
+      before do
+        seattle_austin = Detour.new(seattle, austin)
+        nyc_sunnyvale  = Detour.new(nyc, sunnyvale)
+
+        allow(Detour).to receive(:new)
+                     .with(nyc, sunnyvale)
+                     .and_return(nyc_sunnyvale)
+        allow(DistanceCalculator).to receive(:distance)
+                                 .with(seattle, austin, nyc_sunnyvale)
+                                 .and_return(7500)
+        allow(DistanceCalculator).to receive(:distance)
+                                 .with(seattle, austin)
+                                 .and_return(2000)
+        allow(Detour).to receive(:new)
+                     .with(seattle, austin)
+                     .and_return(seattle_austin)
+        allow(DistanceCalculator).to receive(:distance)
+                                 .with(nyc, sunnyvale, seattle_austin)
+                                 .and_return(6700)
+        allow(DistanceCalculator).to receive(:distance)
+                                 .with(nyc, sunnyvale)
+                                 .and_return(2900)
+      end
+
+      it 'returns the minimum detour distance' do
+        expect(DistanceCalculator.minimum_detour_distance(seattle,
+                                                          austin,
+                                                          nyc,
+                                                          sunnyvale)).
+          to eq(3800)
+      end
+    end
+  end
 end
