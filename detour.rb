@@ -8,8 +8,7 @@ class Detour
   attr_accessor :start, :terminus
 
   def initialize(start, terminus)
-    @start = start
-    @terminus = terminus
+    @start, @terminus = start, terminus
   end
 
   def valid?
