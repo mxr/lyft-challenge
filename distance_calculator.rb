@@ -10,7 +10,7 @@ class DistanceCalculator
   # is no path between the given points. Raises a DistanceError if there is an
   # issue that prohibits it from returning a distance or determing that there
   # is no path between the given points.
-  def self.distance(start, detour, terminus)
+  def self.distance(start, terminus, detour = nil)
     if start.nil? || terminus.nil? || detour && detour.invalid?
       return Float::INFINITY
     end
