@@ -1,4 +1,4 @@
-#! /usr/bin/ruby
+#!/usr/bin/env ruby
 
 # Class to represent a detour, which holds a start and end Coordinate.
 class Detour
