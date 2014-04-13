@@ -4,8 +4,8 @@ require 'open3'
 
 require 'spec_helper'
 
-require_relative '../coordinate'
 require_relative '../dist_calc'
+require_relative '../lib/coordinate'
 
 describe 'dist_calc CLI app' do
   context 'when passing in invalid arguments' do

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-require_relative '../detour'
+require_relative '../lib/detour'
 
 describe Detour do
 

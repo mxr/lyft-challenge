@@ -4,8 +4,8 @@
 if __FILE__ == $0
   require 'optparse'
 
-  require_relative 'coordinate'
-  require_relative 'distance_calculator'
+  require_relative 'lib/coordinate'
+  require_relative 'lib/distance_calculator'
 
   @usage = "Usage: #{$0} -A lat,long -B lat,long -C lat,long -D lat,long"
 

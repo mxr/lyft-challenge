@@ -1,8 +1,8 @@
 require 'spec_helper'
 
-require_relative '../coordinate'
-require_relative '../detour'
-require_relative '../distance_calculator'
+require_relative '../lib/coordinate'
+require_relative '../lib/detour'
+require_relative '../lib/distance_calculator'
 
 describe DistanceCalculator do
 
