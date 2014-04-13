@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
 
+require_relative 'dist_calc'
+
 # Class to represent a detour, which holds a start and end Coordinate.
 class Detour
 
