@@ -1,7 +1,7 @@
 require 'spec_helper'
 
+require_relative '../coordinate'
 require_relative '../detour'
-require_relative '../dist_calc'
 require_relative '../distance_calculator'
 
 describe DistanceCalculator do

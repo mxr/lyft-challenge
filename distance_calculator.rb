@@ -1,6 +1,12 @@
 #!/usr/bin/env ruby
 
+require 'cgi'
+require 'json'
+require 'open-uri'
+require 'uri'
+
 require_relative 'coordinate'
+require_relative 'detour'
 
 # Class to compute distances between given Coordinates.
 class DistanceCalculator
