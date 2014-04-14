@@ -37,6 +37,8 @@ if __FILE__ == $0
     distance = DistanceCalculator.minimum_detour_distance(a, b, c, d)
   rescue DistanceError
     abort('Routing server returned an error.')
+  rescue InvalidAPIKeyError
+    abort('Bing Routes API key is invalid.')
   end
 
   if distance == Float::INFINITY

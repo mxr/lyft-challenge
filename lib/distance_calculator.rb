@@ -25,10 +25,18 @@ class DistanceCalculator
       return 0 if detour.nil? || start == detour.start && detour.no_distance?
     end
 
+    api_key_path = File.join(File.dirname(__FILE__), '../config/key.txt')
+
+    begin
+      api_key = File.read(api_key_path).strip
+    rescue Errno::ENOENT
+      raise InvalidAPIKeyError.new('Bing Routes API key not at config/key.txt')
+    end
+
     unescaped_query_params =
-      {'key'   => File.read('key.txt').strip, # Bing Maps API key
-       'optmz' => 'distance',                 # Optimize for distance
-       'du'    => 'mi'}                       # Return the result in miles
+      {'key'   => api_key,    # Bing Routes API key
+       'optmz' => 'distance', # Optimize for distance
+       'du'    => 'mi'}       # Return the result in miles
 
     unescaped_waypoint_query_params =
       {'wp.1'  => start.to_unescaped_query_param}
@@ -54,9 +62,11 @@ class DistanceCalculator
       response = JSON.parse(open(url).read)
     rescue OpenURI::HTTPError => e
       code = e.io.status.first.to_i
-      if code == 404
-        # 404 is raised when a location is unreachable.
+      case code
+      when 404 # returned when a location is unreachable.
         return Float::INFINITY
+      when 401
+        raise InvalidAPIKeyError.new('Bing Routes API key is invalid.')
       else
         raise DistanceError.new("#{code} returned from routing server.")
       end
@@ -106,4 +116,8 @@ end
 # it from returning a distance or determing that there is no path between the
 # given points.
 class DistanceError < StandardError
+end
+
+# Error that the DistanceCalculator throws when the API key is invalid.
+class InvalidAPIKeyError < StandardError
 end

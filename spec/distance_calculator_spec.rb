@@ -66,12 +66,21 @@ describe DistanceCalculator do
       end
     end
 
+    context 'when there is no API key' do
+      before { allow(File).to receive(:read).and_raise(Errno::ENOENT) }
+
+      it 'raises an exception' do
+        expect(lambda { DistanceCalculator.distance(seattle, nyc, reachable) }).
+          to raise_error(InvalidAPIKeyError)
+      end
+    end
+
     context 'when the API key is invalid' do
       before { allow(File).to receive(:read).and_return('foo') }
 
       it 'raises an exception' do
         expect(lambda { DistanceCalculator.distance(seattle, nyc, reachable) }).
-          to raise_error(DistanceError)
+          to raise_error(InvalidAPIKeyError)
       end
     end
 
