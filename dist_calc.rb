@@ -30,6 +30,8 @@ if __FILE__ == $0
 
   abort(@usage) if coordinates.length < 4
 
+  puts 'Calculating...'
+
   begin
     a, b, c, d = coordinates.values_at(* %w[-A -B -C -D])
     distance = DistanceCalculator.minimum_detour_distance(a, b, c, d)
@@ -40,6 +42,6 @@ if __FILE__ == $0
   if distance == Float::INFINITY
     abort('Unreachable destinations.')
   else
-    puts "The minimum detour distance is #{distance} mi."
+    puts "The minimum detour distance is #{'%.2f' % distance} mi."
   end
 end
