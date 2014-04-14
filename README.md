@@ -1,6 +1,6 @@
 # Lyft Programming Challenge
 ---
-## Computing the minimum detour distace between four points
+## Computing the minimum detour distance between four points
 
 From the problem spec:
 
