@@ -2,6 +2,9 @@
 
 # CLI app for computing the minimum detour distance between four Coordinates.
 if __FILE__ == $0
+  require 'rubygems'
+  require 'bundler/setup'
+
   require 'optparse'
 
   require_relative 'lib/coordinate'

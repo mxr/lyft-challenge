@@ -1,5 +1,8 @@
 #!/usr/bin/env ruby
 
+require 'rubygems'
+require 'bundler/setup'
+
 require_relative 'coordinate'
 
 # Class to represent a detour, which holds a start and end Coordinate.

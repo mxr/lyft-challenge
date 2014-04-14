@@ -1,5 +1,8 @@
 #!/usr/bin/env ruby
 
+require 'rubygems'
+require 'bundler/setup'
+
 # Class to represent a coordinate on Earth.
 class Coordinate
 
