@@ -15,7 +15,7 @@ class Detour
   end
 
   def valid?
-    @start.nil? ? @terminus.nil? : (not @terminus.nil?)
+    @start.nil? ? @terminus.nil? : !!@terminus
   end
 
   def invalid?
