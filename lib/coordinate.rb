@@ -6,7 +6,6 @@ require 'bundler/setup'
 
 # Class to represent a coordinate on Earth.
 class Coordinate
-
   attr_accessor :latitude, :longitude
 
   def initialize(latitude, longitude)

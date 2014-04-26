@@ -14,7 +14,6 @@ require_relative 'detour'
 
 # Class to compute distances between given Coordinates.
 class DistanceCalculator
-
   # Compute the distance between start and terminus while passing through an
   # optional detour. Returns the distance in miles or Float::INFINITY if there
   # is no path between the given points. Raises a DistanceError if there is an
@@ -96,7 +95,6 @@ class DistanceCalculator
   # simply the minimum of the possible detour combinations (which could be
   # Float::INFINITY if one place is unreachable).
   def self.minimum_detour_distance(a, b, c, d)
-
     return Float::INFINITY unless a && b && c && d
 
     acdb = DistanceCalculator.distance(a, b, Detour.new(c,d))
