@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# encoding: UTF-8
 
 # CLI app for computing the minimum detour distance between four Coordinates.
 if __FILE__ == $0

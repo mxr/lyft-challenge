@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 # This gem is used to read stderr and as a cross-platform way to suppress
 # command output.
 require 'open3'
