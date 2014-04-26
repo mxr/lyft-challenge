@@ -23,6 +23,6 @@ class Detour
   end
 
   def no_distance?
-    @start == nil || @terminus == nil || @start == @terminus
+    @start.nil? || @terminus.nil? || @start == @terminus
   end
 end
