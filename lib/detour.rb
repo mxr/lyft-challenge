@@ -20,7 +20,7 @@ class Detour
   end
 
   def invalid?
-    not valid?
+    !valid?
   end
 
   def no_distance?
