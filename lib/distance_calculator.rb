@@ -37,19 +37,19 @@ class DistanceCalculator
     end
 
     unescaped_query_params =
-      {'key'   => api_key,    # Bing Routes API key
-       'optmz' => 'distance', # Optimize for distance
-       'du'    => 'mi'}       # Return the result in miles
+      { 'key'   => api_key,     # Bing Routes API key
+        'optmz' => 'distance',  # Optimize for distance
+        'du'    => 'mi' }       # Return the result in miles
 
     unescaped_waypoint_query_params =
-      {'wp.1'  => start.to_unescaped_query_param}
+      { 'wp.1'  => start.to_unescaped_query_param }
         .merge(
           if detour
-            {'vwp.2' => detour.start.to_unescaped_query_param,
-             'vwp.3' => detour.terminus.to_unescaped_query_param,
-             'wp.4'  => terminus.to_unescaped_query_param}
+            { 'vwp.2' => detour.start.to_unescaped_query_param,
+              'vwp.3' => detour.terminus.to_unescaped_query_param,
+              'wp.4'  => terminus.to_unescaped_query_param }
           else
-            {'wp.2' => terminus.to_unescaped_query_param}
+            { 'wp.2' => terminus.to_unescaped_query_param }
           end)
 
     escaped_query =
