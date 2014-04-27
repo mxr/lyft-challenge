@@ -57,9 +57,9 @@ class DistanceCalculator
         "#{k}=#{CGI.escape(v)}"
       end.join('&')
 
-    url = URI::HTTP.build(:host => 'dev.virtualearth.net',
-                          :path => '/REST/v1/Routes/',
-                          :query => escaped_query)
+    url = URI::HTTP.build(host:  'dev.virtualearth.net',
+                          path:  '/REST/v1/Routes/',
+                          query: escaped_query)
 
     begin
       response = JSON.parse(open(url).read)
