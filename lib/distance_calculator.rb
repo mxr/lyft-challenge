@@ -78,7 +78,7 @@ class DistanceCalculator
     end
 
     begin
-      distance = response['resourceSets'][0]['resources'][0]['travelDistance']
+      return response['resourceSets'][0]['resources'][0]['travelDistance']
     rescue NoMethodError
       message = 'Incomplete response received from routing server.'
       raise DistanceError.new(message)
