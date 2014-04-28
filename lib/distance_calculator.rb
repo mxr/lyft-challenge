@@ -53,7 +53,8 @@ class DistanceCalculator
           end)
 
     escaped_query =
-      unescaped_query_params.merge(unescaped_waypoint_query_params).map do |k,v|
+      unescaped_query_params.merge(unescaped_waypoint_query_params).map \
+      do |k, v|
         "#{k}=#{CGI.escape(v)}"
       end.join('&')
 
@@ -97,7 +98,7 @@ class DistanceCalculator
   def self.minimum_detour_distance(a, b, c, d)
     return Float::INFINITY unless a && b && c && d
 
-    acdb = DistanceCalculator.distance(a, b, Detour.new(c,d))
+    acdb = DistanceCalculator.distance(a, b, Detour.new(c, d))
     if acdb == Float::INFINITY
       # If any path is unreachable, this means one of the coordinates is on an
       # "undrivable island", so the other distances will also be unreachable
