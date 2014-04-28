@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-require_relative  '../lib/coordinate'
+require_relative '../lib/coordinate'
 
 describe Coordinate do
   subject(:coordinate) { Coordinate.new(1, 0) }
