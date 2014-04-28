@@ -14,11 +14,13 @@ describe Coordinate do
       end
 
       it 'returns not equal when the other has a different latitude' do
-        expect(coordinate).not_to eq(Coordinate.new(coordinate.latitude+1, 0))
+        expect(coordinate).
+          not_to eq(Coordinate.new(coordinate.latitude + 1, 0))
       end
 
       it 'returns not equal when the other has a different longitude' do
-        expect(coordinate).not_to eq(Coordinate.new(0, coordinate.longitude+1))
+        expect(coordinate).
+          not_to eq(Coordinate.new(0, coordinate.longitude + 1))
       end
 
       it 'returns equal when the other coordinate has the same lat and long' do
