@@ -72,7 +72,7 @@ describe DistanceCalculator do
       before { allow(File).to receive(:read).and_raise(Errno::ENOENT) }
 
       it 'raises an exception' do
-        expect(lambda { DistanceCalculator.distance(seattle, nyc, reachable) })
+        expect(-> { DistanceCalculator.distance(seattle, nyc, reachable) })
         .to raise_error(InvalidAPIKeyError)
       end
     end
@@ -81,7 +81,7 @@ describe DistanceCalculator do
       before { allow(File).to receive(:read).and_return('foo') }
 
       it 'raises an exception' do
-        expect(lambda { DistanceCalculator.distance(seattle, nyc, reachable) })
+        expect(-> { DistanceCalculator.distance(seattle, nyc, reachable) })
         .to raise_error(InvalidAPIKeyError)
       end
     end
@@ -109,7 +109,7 @@ describe DistanceCalculator do
       end
 
       it 'raises an exception' do
-        expect(lambda { DistanceCalculator.distance(seattle, nyc, reachable) })
+        expect(-> { DistanceCalculator.distance(seattle, nyc, reachable) })
         .to raise_error(DistanceError)
       end
     end
@@ -118,7 +118,7 @@ describe DistanceCalculator do
       before { DistanceCalculator.stub_chain(:open, :read).and_return('foo') }
 
       it 'raise an exception' do
-        expect(lambda { DistanceCalculator.distance(seattle, nyc, reachable) })
+        expect(-> { DistanceCalculator.distance(seattle, nyc, reachable) })
         .to raise_error(DistanceError)
       end
     end
@@ -127,7 +127,7 @@ describe DistanceCalculator do
       before { DistanceCalculator.stub_chain(:open, :read).and_return('{}') }
 
       it 'raise an exception' do
-        expect(lambda { DistanceCalculator.distance(seattle, nyc, reachable) })
+        expect(-> { DistanceCalculator.distance(seattle, nyc, reachable) })
         .to raise_error(DistanceError)
       end
     end
