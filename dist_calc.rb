@@ -50,6 +50,6 @@ if __FILE__ == $PROGRAM_NAME
   if distance == Float::INFINITY
     abort('Unreachable destinations.')
   else
-    puts "The minimum detour distance is #{'%.2f' % distance} mi."
+    puts "The minimum detour distance is #{format('%.2f', distance)} mi."
   end
 end
