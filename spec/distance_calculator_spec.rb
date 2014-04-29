@@ -21,18 +21,18 @@ describe DistanceCalculator do
   describe '.distance' do
     context 'when computing the distance' do
       it 'returns unreachable for no start' do
-        expect(DistanceCalculator.distance(nil, seattle, reachable)).
-          to eq(Float::INFINITY)
+        expect(DistanceCalculator.distance(nil, seattle, reachable))
+        .to eq(Float::INFINITY)
       end
 
       it 'returns unreachable for no terminus' do
-        expect(DistanceCalculator.distance(seattle, nil, invalid_detour)).
-          to eq(Float::INFINITY)
+        expect(DistanceCalculator.distance(seattle, nil, invalid_detour))
+        .to eq(Float::INFINITY)
       end
 
       it 'returns 0 when the start and end are the same with no detour' do
-        expect(DistanceCalculator.distance(seattle, seattle.clone)).
-          to eq(0)
+        expect(DistanceCalculator.distance(seattle, seattle.clone))
+        .to eq(0)
       end
 
       it 'returns 0 when the start, end, and detour are the same place' do
@@ -43,28 +43,28 @@ describe DistanceCalculator do
       end
 
       it 'returns unreachable for unreachable endpoints' do
-        expect(DistanceCalculator.distance(seattle, moscow)).
-          to eq(Float::INFINITY)
+        expect(DistanceCalculator.distance(seattle, moscow))
+        .to eq(Float::INFINITY)
       end
 
       it 'returns unreachable for an unreachable detour' do
-        expect(DistanceCalculator.distance(seattle, nyc, unreachable)).
-          to eq(Float::INFINITY)
+        expect(DistanceCalculator.distance(seattle, nyc, unreachable))
+        .to eq(Float::INFINITY)
       end
 
       it 'returns unreachable for an invalid detour' do
-        expect(DistanceCalculator.distance(seattle, nyc, invalid_detour)).
-          to eq(Float::INFINITY)
+        expect(DistanceCalculator.distance(seattle, nyc, invalid_detour))
+        .to eq(Float::INFINITY)
       end
 
       it 'returns a reasonable value for no detour' do
-        expect(DistanceCalculator.distance(seattle, nyc)).
-          to be > 0
+        expect(DistanceCalculator.distance(seattle, nyc))
+        .to be > 0
       end
 
       it 'returns a reasonable value for valid detour' do
-        expect(DistanceCalculator.distance(seattle, nyc, reachable)).
-          to be > 0
+        expect(DistanceCalculator.distance(seattle, nyc, reachable))
+        .to be > 0
       end
     end
 
@@ -72,8 +72,8 @@ describe DistanceCalculator do
       before { allow(File).to receive(:read).and_raise(Errno::ENOENT) }
 
       it 'raises an exception' do
-        expect(lambda { DistanceCalculator.distance(seattle, nyc, reachable) }).
-          to raise_error(InvalidAPIKeyError)
+        expect(lambda { DistanceCalculator.distance(seattle, nyc, reachable) })
+        .to raise_error(InvalidAPIKeyError)
       end
     end
 
@@ -81,8 +81,8 @@ describe DistanceCalculator do
       before { allow(File).to receive(:read).and_return('foo') }
 
       it 'raises an exception' do
-        expect(lambda { DistanceCalculator.distance(seattle, nyc, reachable) }).
-          to raise_error(InvalidAPIKeyError)
+        expect(lambda { DistanceCalculator.distance(seattle, nyc, reachable) })
+        .to raise_error(InvalidAPIKeyError)
       end
     end
 
@@ -95,8 +95,8 @@ describe DistanceCalculator do
       end
 
       it 'returns unreachable' do
-        expect(DistanceCalculator.distance(nyc, nyc, unreachable)).
-          to eq(Float::INFINITY)
+        expect(DistanceCalculator.distance(nyc, nyc, unreachable))
+        .to eq(Float::INFINITY)
       end
     end
 
@@ -109,8 +109,8 @@ describe DistanceCalculator do
       end
 
       it 'raises an exception' do
-        expect(lambda { DistanceCalculator.distance(seattle, nyc, reachable) }).
-          to raise_error(DistanceError)
+        expect(lambda { DistanceCalculator.distance(seattle, nyc, reachable) })
+        .to raise_error(DistanceError)
       end
     end
 
@@ -118,8 +118,8 @@ describe DistanceCalculator do
       before { DistanceCalculator.stub_chain(:open, :read).and_return('foo') }
 
       it 'raise an exception' do
-        expect(lambda { DistanceCalculator.distance(seattle, nyc, reachable) }).
-          to raise_error(DistanceError)
+        expect(lambda { DistanceCalculator.distance(seattle, nyc, reachable) })
+        .to raise_error(DistanceError)
       end
     end
 
@@ -127,8 +127,8 @@ describe DistanceCalculator do
       before { DistanceCalculator.stub_chain(:open, :read).and_return('{}') }
 
       it 'raise an exception' do
-        expect(lambda { DistanceCalculator.distance(seattle, nyc, reachable) }).
-          to raise_error(DistanceError)
+        expect(lambda { DistanceCalculator.distance(seattle, nyc, reachable) })
+        .to raise_error(DistanceError)
       end
     end
   end
@@ -136,23 +136,23 @@ describe DistanceCalculator do
   describe '.minimum_detour_distance' do
     context 'when given nil or unreachable coordinates' do
       it 'returns unreachable if one of the inputs are nil' do
-        expect(DistanceCalculator.minimum_detour_distance(nil, nyc, nyc, nyc)).
-          to eq(Float::INFINITY)
+        expect(DistanceCalculator.minimum_detour_distance(nil, nyc, nyc, nyc))
+        .to eq(Float::INFINITY)
       end
 
       it 'returns unreachable if one of the inputs are nil' do
-        expect(DistanceCalculator.minimum_detour_distance(nyc, nil, nyc, nyc)).
-          to eq(Float::INFINITY)
+        expect(DistanceCalculator.minimum_detour_distance(nyc, nil, nyc, nyc))
+        .to eq(Float::INFINITY)
       end
 
       it 'returns unreachable if one of the inputs are nil' do
-        expect(DistanceCalculator.minimum_detour_distance(nyc, nyc, nil, nyc)).
-          to eq(Float::INFINITY)
+        expect(DistanceCalculator.minimum_detour_distance(nyc, nyc, nil, nyc))
+        .to eq(Float::INFINITY)
       end
 
       it 'returns unreachable if one of the inputs are nil' do
-        expect(DistanceCalculator.minimum_detour_distance(nyc, nyc, nyc, nil)).
-          to eq(Float::INFINITY)
+        expect(DistanceCalculator.minimum_detour_distance(nyc, nyc, nyc, nil))
+        .to eq(Float::INFINITY)
       end
 
       it 'returns unreachable if one of the coordinates is unreachable' do
@@ -191,8 +191,8 @@ describe DistanceCalculator do
         expect(DistanceCalculator.minimum_detour_distance(seattle,
                                                           austin,
                                                           nyc,
-                                                          sunnyvale)).
-          to eq(3800)
+                                                          sunnyvale))
+        .to eq(3800)
       end
     end
   end
