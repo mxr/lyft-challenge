@@ -2,7 +2,7 @@
 # encoding: UTF-8
 
 # CLI app for computing the minimum detour distance between four Coordinates.
-if __FILE__ == $0
+if __FILE__ == $PROGRAM_NAME
   require 'rubygems'
   require 'bundler/setup'
 
@@ -11,11 +11,12 @@ if __FILE__ == $0
   require_relative 'lib/coordinate'
   require_relative 'lib/distance_calculator'
 
-  @usage = "Usage: #{$0} -A lat,long -B lat,long -C lat,long -D lat,long"
+  USAGE =
+    "Usage: #{$PROGRAM_NAME} -A lat,long -B lat,long -C lat,long -D lat,long"
 
   def sanitize_and_normalize(arg)
     lat_and_long = arg.map(&:to_f)
-    abort(@usage) if lat_and_long.length != 2
+    abort(USAGE) if lat_and_long.length != 2
     lat_and_long
   end
 
@@ -23,7 +24,7 @@ if __FILE__ == $0
   coordinates = {}
   OptionParser.new do |options|
 
-    options.banner = @usage
+    options.banner = USAGE
 
     OPTION_SWITCHES.each do |switch|
       options.on("#{switch} lat,long", Array) do |coordinate_string|
@@ -33,7 +34,7 @@ if __FILE__ == $0
     end
   end.parse!
 
-  abort(@usage) if coordinates.length < 4
+  abort(USAGE) if coordinates.length < 4
 
   puts 'Calculating...'
 
