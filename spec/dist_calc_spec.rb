@@ -39,11 +39,8 @@ describe 'dist_calc CLI app' do
     let(:moscow)    { Coordinate.new(55.755826, 37.6173) }
 
     def build_args(a, b, c, d)
-      options = %w[-A -B -C -D]
-      coordinates = [a, b, c, d]
-
-      options.zip(coordinates).map do |(option, coordinate)|
-        "#{option} #{coordinate.latitude},#{coordinate.longitude}"
+      %w(-A -B -C -D).zip([a, b, c, d]).map do |(switch, coordinate)|
+        "#{switch} #{coordinate.latitude},#{coordinate.longitude}"
       end.join(' ')
     end
 

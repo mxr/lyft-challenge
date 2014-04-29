@@ -19,15 +19,16 @@ if __FILE__ == $0
     lat_and_long
   end
 
+  OPTION_SWITCHES = %w(-A -B -C -D)
   coordinates = {}
   OptionParser.new do |options|
 
     options.banner = @usage
 
-    %w[-A -B -C -D].each do |option|
-      options.on("#{option} lat,long", Array) do |coordinate_string|
+    OPTION_SWITCHES.each do |switch|
+      options.on("#{switch} lat,long", Array) do |coordinate_string|
         coordinate = Coordinate.new(* sanitize_and_normalize(coordinate_string))
-        coordinates[option] = coordinate
+        coordinates[switch] = coordinate
       end
     end
   end.parse!
@@ -37,7 +38,7 @@ if __FILE__ == $0
   puts 'Calculating...'
 
   begin
-    a, b, c, d = coordinates.values_at(* %w[-A -B -C -D])
+    a, b, c, d = coordinates.values_at(* OPTION_SWITCHES)
     distance = DistanceCalculator.minimum_detour_distance(a, b, c, d)
   rescue DistanceError
     abort('Routing server returned an error.')
