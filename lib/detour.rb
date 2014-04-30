@@ -15,11 +15,11 @@ class Detour
   end
 
   def valid?
-    @start.nil? ? @terminus.nil? : !!@terminus
+    !invalid?
   end
 
   def invalid?
-    !valid?
+    @start.nil? ^ @terminus.nil? # => Invalid when only one Coordinate is set.
   end
 
   def no_distance?

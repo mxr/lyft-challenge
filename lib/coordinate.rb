@@ -17,6 +17,6 @@ class Coordinate
   end
 
   def ==(other)
-    !!other && [@latitude, @longitude] == [other.latitude, other.longitude]
+    other && [@latitude, @longitude] == [other.latitude, other.longitude]
   end
 end
