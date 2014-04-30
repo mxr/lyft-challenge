@@ -60,13 +60,15 @@ describe 'dist_calc CLI app' do
     end
 
     it 'returns an error if the distance is unreachable' do
-      Open3.popen3("ruby dist_calc.rb #{unreachable_args}") do |_, _, _, thread|
+      cmd = "ruby dist_calc.rb #{unreachable_args}"
+      Open3.popen3(cmd) do |_, _, _, thread|
         expect(thread.value.exitstatus).to_not eq(0)
       end
     end
 
     it 'tells the user the distance is unreachable if that is the case' do
-      Open3.popen3("ruby dist_calc.rb #{unreachable_args}") do |_, _, stderr, _|
+      cmd = "ruby dist_calc.rb #{unreachable_args}"
+      Open3.popen3(cmd) do |_, _, stderr, _|
         expect(stderr.read.downcase).to match(/unreachable/)
       end
     end

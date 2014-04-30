@@ -28,7 +28,8 @@ if __FILE__ == $PROGRAM_NAME
 
     OPTION_SWITCHES.each do |switch|
       options.on("#{switch} lat,long", Array) do |coordinate_string|
-        coordinate = Coordinate.new(* sanitize_and_normalize(coordinate_string))
+        sanitized_args = sanitize_and_normalize(coordinate_string)
+        coordinate = Coordinate.new(* sanitized_args)
         coordinates[switch] = coordinate
       end
     end
