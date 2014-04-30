@@ -33,7 +33,7 @@ class DistanceCalculator
     begin
       api_key = File.read(api_key_path).strip
     rescue Errno::ENOENT
-      raise InvalidAPIKeyError.new('Bing Routes API key not at config/key.txt')
+      raise InvalidAPIKeyError, 'Bing Routes API key not at config/key.txt'
     end
 
     unescaped_query_params =
@@ -70,19 +70,18 @@ class DistanceCalculator
       when 404 # returned when a location is unreachable.
         return Float::INFINITY
       when 401
-        raise InvalidAPIKeyError.new('Bing Routes API key is invalid.')
+        raise InvalidAPIKeyError, 'Bing Routes API key is invalid.'
       else
-        raise DistanceError.new("#{code} returned from routing server.")
+        raise DistanceError, "#{code} returned from routing server."
       end
     rescue JSON::ParserError
-      raise DistanceError.new('Invalid response received from routing server.')
+      raise DistanceError, 'Invalid response received from routing server.'
     end
 
     begin
       return response['resourceSets'][0]['resources'][0]['travelDistance']
     rescue NoMethodError
-      message = 'Incomplete response received from routing server.'
-      raise DistanceError.new(message)
+      raise DistanceError, 'Incomplete response received from routing server.'
     end
   end
 
