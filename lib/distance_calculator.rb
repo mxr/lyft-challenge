@@ -18,7 +18,8 @@ class DistanceCalculator
   # optional detour. Returns the distance in miles or Float::INFINITY if there
   # is no path between the given points. Raises a DistanceError if there is an
   # issue that prohibits it from returning a distance or determing that there
-  # is no path between the given points.
+  # is no path between the given points. Performs a blocking network
+  # operation.
   def self.distance(start, terminus, detour = nil)
     if start.nil? || terminus.nil? || detour && detour.invalid?
       return Float::INFINITY
