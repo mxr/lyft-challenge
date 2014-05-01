@@ -12,7 +12,7 @@ class Coordinate
     @latitude, @longitude = latitude, longitude
   end
 
-  def to_unescaped_query_param
+  def to_unescaped_query_string_param
     "#{@latitude}, #{@longitude}"
   end
 

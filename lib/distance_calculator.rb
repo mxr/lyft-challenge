@@ -36,25 +36,25 @@ class DistanceCalculator
       raise InvalidAPIKeyError, 'Bing Routes API key not at config/key.txt'
     end
 
-    unescaped_query_params =
+    unescaped_query_string_params =
       { 'key'   => api_key,     # Bing Routes API key
         'optmz' => 'distance',  # Optimize for distance
         'du'    => 'mi' }       # Return the result in miles
 
-    unescaped_waypoint_query_params =
-      { 'wp.1'  => start.to_unescaped_query_param }
+    unescaped_waypoint_query_string_params =
+      { 'wp.1'  => start.to_unescaped_query_string_param }
         .merge(
           if detour
-            { 'vwp.2' => detour.start.to_unescaped_query_param,
-              'vwp.3' => detour.terminus.to_unescaped_query_param,
-              'wp.4'  => terminus.to_unescaped_query_param }
+            { 'vwp.2' => detour.start.to_unescaped_query_string_param,
+              'vwp.3' => detour.terminus.to_unescaped_query_string_param,
+              'wp.4'  => terminus.to_unescaped_query_string_param }
           else
-            { 'wp.2' => terminus.to_unescaped_query_param }
+            { 'wp.2' => terminus.to_unescaped_query_string_param }
           end)
 
     escaped_query =
-      unescaped_query_params.merge(unescaped_waypoint_query_params).map \
-      do |k, v|
+      unescaped_query_string_params
+      .merge(unescaped_waypoint_query_string_params).map do |k, v|
         "#{k}=#{CGI.escape(v)}"
       end.join('&')
 

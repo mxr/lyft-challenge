@@ -30,10 +30,10 @@ describe Coordinate do
     end
   end
 
-  describe '#to_unescaped_query_param' do
-    context 'when serializing to a query parameter' do
+  describe '#to_unescaped_query_string_param' do
+    context 'when serializing to a query string parameter' do
       it 'must match a specific format' do
-        expect(coordinate.to_unescaped_query_param)
+        expect(coordinate.to_unescaped_query_string_param)
         .to eq "#{coordinate.latitude}, #{coordinate.longitude}"
       end
     end
