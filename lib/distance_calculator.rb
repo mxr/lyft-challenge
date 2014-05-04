@@ -21,69 +21,20 @@ class DistanceCalculator
   # is no path between the given points. Performs a blocking network
   # operation.
   def self.distance(start, terminus, detour = nil)
-    if start.nil? || terminus.nil? || detour && detour.invalid?
-      return Float::INFINITY
-    end
+    return Float::INFINITY if invalid_path?(start, terminus, detour)
+    return 0 if no_distance_path?(start, terminus, detour)
 
-    if start == terminus
-      return 0 if detour.nil? || start == detour.start && detour.no_distance?
-    end
+    unescaped_settings_qsp = build_unescaped_settings_query_string_params
+    unescaped_waypoint_qsp =
+      build_unescaped_waypoint_query_string_params(start, terminus, detour)
 
-    api_key_path = File.join(File.dirname(__FILE__), '../config/key.txt')
+    escaped_query_string =
+      build_url_query_string(unescaped_settings_qsp
+                             .merge(unescaped_waypoint_qsp))
 
-    begin
-      api_key = File.read(api_key_path).strip
-    rescue Errno::ENOENT
-      raise InvalidAPIKeyError, 'Bing Routes API key not at config/key.txt'
-    end
+    url = build_bing_routes_url(escaped_query_string)
 
-    unescaped_query_string_params =
-      { 'key'   => api_key,     # Bing Routes API key
-        'optmz' => 'distance',  # Optimize for distance
-        'du'    => 'mi' }       # Return the result in miles
-
-    unescaped_waypoint_query_string_params =
-      { 'wp.1'  => start.to_unescaped_query_string_param }
-        .merge(
-          if detour
-            { 'vwp.2' => detour.start.to_unescaped_query_string_param,
-              'vwp.3' => detour.terminus.to_unescaped_query_string_param,
-              'wp.4'  => terminus.to_unescaped_query_string_param }
-          else
-            { 'wp.2' => terminus.to_unescaped_query_string_param }
-          end)
-
-    escaped_query =
-      unescaped_query_string_params
-      .merge(unescaped_waypoint_query_string_params).map do |k, v|
-        "#{k}=#{CGI.escape(v)}"
-      end.join('&')
-
-    url = URI::HTTP.build(host:  'dev.virtualearth.net',
-                          path:  '/REST/v1/Routes/',
-                          query: escaped_query)
-
-    begin
-      response = JSON.parse(open(url).read)
-    rescue OpenURI::HTTPError => e
-      code = e.io.status.first.to_i
-      case code
-      when 404 # returned when a location is unreachable.
-        return Float::INFINITY
-      when 401
-        raise InvalidAPIKeyError, 'Bing Routes API key is invalid.'
-      else
-        raise DistanceError, "#{code} returned from routing server."
-      end
-    rescue JSON::ParserError
-      raise DistanceError, 'Invalid response received from routing server.'
-    end
-
-    begin
-      return response['resourceSets'][0]['resources'][0]['travelDistance']
-    rescue NoMethodError
-      raise DistanceError, 'Incomplete response received from routing server.'
-    end
+    parse_distance_from_json(parse_response(fetch_response_from_server(url)))
   end
 
   # Adapted from the challenge description: Given four latitude / longitude
@@ -111,6 +62,96 @@ class DistanceCalculator
       cd_detour_distance = cabd - DistanceCalculator.distance(c, d)
 
       [ab_detour_distance, cd_detour_distance].min
+    end
+  end
+
+  class << self
+    private
+
+    def build_unescaped_settings_query_string_params
+      begin
+        key = File.read(File.join(File.dirname(__FILE__), '../config/key.txt'))
+                  .strip
+      rescue Errno::ENOENT
+        raise InvalidAPIKeyError, 'Bing Routes API key not at config/key.txt'
+      end
+
+      { 'key'   => key,        # Bing Routes API key
+        'optmz' => 'distance', # Optimize for distance
+        'du'    => 'mi' }      # Return the result in miles
+    end
+
+    def build_unescaped_waypoint_query_string_params(start, terminus, detour)
+      fail_if_invalid_path(start, terminus, detour)
+
+      start = { 'wp.1'  => start.to_unescaped_query_string_param }
+      rest = if detour
+               { 'vwp.2' => detour.start.to_unescaped_query_string_param,
+                 'vwp.3' => detour.terminus.to_unescaped_query_string_param,
+                 'wp.4'  => terminus.to_unescaped_query_string_param }
+             else
+               { 'wp.2' => terminus.to_unescaped_query_string_param }
+             end
+
+      start.merge(rest)
+    end
+
+    def build_url_query_string(unescaped_params)
+      unescaped_params.map do |k, v|
+        "#{CGI.escape(k)}=#{CGI.escape(v)}"
+      end.join('&')
+    end
+
+    def build_bing_routes_url(escaped_query_string)
+      URI::HTTP.build(host:  'dev.virtualearth.net',
+                      path:  '/REST/v1/Routes/',
+                      query: escaped_query_string)
+    end
+
+    def fetch_response_from_server(url)
+      open(url).read
+    rescue OpenURI::HTTPError => e
+      code = e.io.status.first.to_i
+      case code
+      when 404
+        # This means the path is unreachable. We can still return the response.
+        e.io.readlines.first
+      when 401 then raise InvalidAPIKeyError, 'Invalid Bing Routes API key'
+      else raise DistanceError, "#{code} returned from routing server."
+      end
+    end
+
+    def parse_response(response)
+      JSON.parse(response)
+    rescue JSON::ParserError
+      raise DistanceError, 'Invalid response received from routing server.'
+    end
+
+    def parse_distance_from_json(json)
+      if json['statusCode'] == 404
+        Float::INFINITY
+      else
+        json['resourceSets'][0]['resources'][0]['travelDistance']
+      end
+    rescue NoMethodError
+      raise DistanceError, 'Incomplete response received from routing server.'
+    end
+
+    def fail_if_invalid_path(start, terminus, detour)
+      if invalid_path?(start, terminus, detour)
+        fail StandardError, 'Path must be valid before calling this method.'
+      end
+    end
+
+    def invalid_path?(start, terminus, detour)
+      start.nil? || terminus.nil? || detour && detour.invalid?
+    end
+
+    def no_distance_path?(start, terminus, detour)
+      fail_if_invalid_path(start, terminus, detour)
+
+      start == terminus &&
+        (detour.nil? || start == detour.start && detour.no_distance?)
     end
   end
 end
