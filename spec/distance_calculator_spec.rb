@@ -277,7 +277,7 @@ describe DistanceCalculator do
                      'wp.1=47.606209%2C+-122.332071&' \
                      'wp.2=55.755826%2C+37.6173')
                .to_s)
-        .to eq('http://dev.virtualearth.net/REST/v1/Routes/?key=123&' \
+        .to eq('https://dev.virtualearth.net/REST/v1/Routes/?key=123&' \
                'optmz=distance&du=mi&wp.1=47.606209%2C+-122.332071&'  \
                'wp.2=55.755826%2C+37.6173')
       end

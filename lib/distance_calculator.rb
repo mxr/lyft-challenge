@@ -103,9 +103,9 @@ class DistanceCalculator
     end
 
     def build_bing_routes_url(escaped_query_string)
-      URI::HTTP.build(host:  'dev.virtualearth.net',
-                      path:  '/REST/v1/Routes/',
-                      query: escaped_query_string)
+      URI::HTTPS.build(host:  'dev.virtualearth.net',
+                       path:  '/REST/v1/Routes/',
+                       query: escaped_query_string)
     end
 
     def fetch_response_from_server(url)
