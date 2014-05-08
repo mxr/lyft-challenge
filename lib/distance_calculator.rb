@@ -18,7 +18,8 @@ class DistanceCalculator
   # optional detour. Returns the distance in miles or Float::INFINITY if there
   # is no path between the given points. Raises a DistanceError if there is an
   # issue that prohibits it from returning a distance or determing that there
-  # is no path between the given points. Performs a blocking network
+  # is no path between the given points. Raises an InvalidAPIKeyError if the
+  # Bing Maps API key is invalid or not present. Performs a blocking network
   # operation.
   def self.distance(start, terminus, detour = nil)
     return Float::INFINITY if invalid_path?(start, terminus, detour)
@@ -73,7 +74,7 @@ class DistanceCalculator
         key = File.read(File.join(File.dirname(__FILE__), '../config/key.txt'))
                   .strip
       rescue Errno::ENOENT
-        raise InvalidAPIKeyError, 'Bing Routes API key not at config/key.txt'
+        raise InvalidAPIKeyError, 'Bing Maps API key not at config/key.txt'
       end
 
       { 'key'   => key,        # Bing Routes API key
@@ -116,7 +117,7 @@ class DistanceCalculator
       when 404
         # This means the path is unreachable. We can still return the response.
         e.io.readlines.first
-      when 401 then raise InvalidAPIKeyError, 'Invalid Bing Routes API key'
+      when 401 then raise InvalidAPIKeyError, 'Invalid Bing Maps API key'
       else raise DistanceError, "#{code} returned from routing server."
       end
     end
