@@ -11,8 +11,8 @@ if __FILE__ == $PROGRAM_NAME
   require_relative 'lib/coordinate'
   require_relative 'lib/distance_calculator'
 
-  USAGE =
-    "Usage: #{$PROGRAM_NAME} -A lat,long -B lat,long -C lat,long -D lat,long"
+  USAGE = "Usage: ruby #{$PROGRAM_NAME} -A lat,long -B lat,long " \
+                                       '-C lat,long -D lat,long'
 
   def sanitize_and_normalize(arg)
     lat_and_long = arg.map(&:to_f)
