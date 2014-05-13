@@ -1,5 +1,7 @@
 # Lyft Programming Challenge
 ---
+[![Code Climate](https://codeclimate.com/github/maxrz/lyft-challenge.png)](https://codeclimate.com/github/maxrz/lyft-challenge)
+
 ## Computing the minimum detour distance between four points
 
 From the problem spec:
