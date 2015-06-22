@@ -10,7 +10,7 @@ In other words, the detour distance is the extra distance a driver would make if
 
 The solution is a Ruby script that uses the Bing Routes API to compute the distance between four coordinates.
 
-Example usage:
+Usage:
 
 1. Obtain a Bing Maps API key (instructions [here][1]) and save it to `config/key.txt`
 2. Look up the coordinates of the area you're interested in (for example, [here][2]). The below example computes the minimum detour distance between Seattle, Sunnyvale, Austin, and NYC.
